@@ -1,0 +1,11 @@
+{
+  "name": "bsopenalex",
+  "version": "0.0.1",
+  "scripts": {
+    "start": "npm run dev --workspace=client"
+  },
+  "workspaces": [
+    "client",
+    "server"
+  ]
+}
