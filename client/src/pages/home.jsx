@@ -1,4 +1,4 @@
-import { Container, Title } from '@dataesr/react-dsfr';
+import { Container, Title, Select } from '@dataesr/react-dsfr';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import { useEffect, useState } from 'react';
@@ -8,6 +8,16 @@ function sleep(ms) {
 }
 
 export default function Home() {
+  const api = 'https://api.openalex.org/works';
+  const countries = [
+    { value: 'fr', label: 'France' },
+    { value: 'dk', label: 'Denmark' },
+    { value: 'de', label: 'Germany' },
+    { value: 'pt', label: 'Portugal' },
+  ];
+  const mailto = 'bso@recherche.gouv.fr';
+
+  const [country, setCountry] = useState(countries[0].value);
   const [options, setOptions] = useState({
     chart: {
       type: 'column',
@@ -24,10 +34,6 @@ export default function Home() {
       },
     },
   });
-
-  const api = 'https://api.openalex.org/works';
-  const country = 'DK';
-  const mailto = 'attwinS@gmail.com';
 
   useEffect(() => {
     const getData = async () => {
@@ -62,17 +68,23 @@ export default function Home() {
         { name: 'Open repositories', data: oaRepository },
       ];
       options2.colors = ['#ead737', '#91ae4f', '#19905b'];
-      options2.title = { text: 'Distribution of the open access rate of publications in Denmark' };
+      const countryLabel = countries.find((item) => item.value === country).label;
+      options2.title = { text: `Distribution of the open access rate of publications in ${countryLabel} according to OpenAlex` };
       setOptions(options2);
     };
     getData();
-  }, []);
+  }, [country]);
 
   return (
     <Container className="fr-my-15w">
       <Title as="h1">
         BSOpenAlex
       </Title>
+      <Select
+        onChange={(e) => setCountry(e.target.value)}
+        options={countries}
+        selected={country}
+      />
       <HighchartsReact
         highcharts={Highcharts}
         options={options}
