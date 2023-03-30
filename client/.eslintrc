@@ -29,5 +29,12 @@
       }
     ]
   },
-  "extends": ["airbnb", "airbnb/hooks"]
+  "extends": ["airbnb", "airbnb/hooks"],
+  "sort-imports": [
+    "error",
+    {
+      "ignoreCase": true,
+      "ignoreDeclarationSort": true
+    }
+  ]
 }
