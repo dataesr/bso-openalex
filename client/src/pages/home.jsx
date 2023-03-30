@@ -30,6 +30,8 @@ export default function Home() {
       type: 'column',
     },
     legend: {
+      verticalAlign: 'top',
+      align: 'left',
       reversed: true,
     },
     plotOptions: {
@@ -37,6 +39,7 @@ export default function Home() {
         stacking: 'normal',
       },
     },
+    yAxis: {}
   });
 
   useEffect(() => {
@@ -56,7 +59,7 @@ export default function Home() {
         const oaRepository = [];
         const oaPublisher = [];
         const oaRepositoryPublisher = [];
-        const years = ['2016', '2017', '2018', '2019', '2020', '2021'];
+        const years = ['2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021'];
         // eslint-disable-next-line no-restricted-syntax
         for (const year of years) {
           const response1 = await fetch(`${api}?filter=institutions.country_code:${country},publication_year:${year}&group_by=best_oa_location.is_oa&mailto=${mailto}`);
@@ -83,6 +86,9 @@ export default function Home() {
         optionsCopy.title = { text: `Distribution of the open access rate of publications in ${countryLabel} according to OpenAlex` };
         optionsCopy.plotOptions.column.dataLabels = { enabled: true, formatter() {
           return Number(this.y).toFixed(0).concat(' %');
+        }};
+        optionsCopy.yAxis.stackLabels = { enabled: true, formatter() {
+          return Number(this.total).toFixed(0).concat(' %');
         }};
         setOptions(optionsCopy);
         setIsLoading(false);
