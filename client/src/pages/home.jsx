@@ -1,5 +1,5 @@
 /* eslint-disable no-await-in-loop */
-import { Container, SearchableSelect, Title } from '@dataesr/react-dsfr';
+import { Col, Container, Row, SearchableSelect, Title } from '@dataesr/react-dsfr';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import { useEffect, useState } from 'react';
@@ -39,7 +39,19 @@ export default function Home() {
         stacking: 'normal',
       },
     },
-    yAxis: {}
+    xAxis: {
+      title: {
+        text: 'Publication year',
+      },
+    },
+    yAxis: {
+      labels: {
+        format: '{text} %',
+      },
+      title: {
+        text: 'Open access rate',
+      },
+    }
   });
 
   useEffect(() => {
@@ -76,7 +88,7 @@ export default function Home() {
           await sleep(sleepDuration);
         }
         const optionsCopy = JSON.parse(JSON.stringify(options));
-        optionsCopy.xAxis = { categories: years };
+        optionsCopy.xAxis.categories = years;
         optionsCopy.series = [
           { name: 'Publisher', data: oaPublisher },
           { name: 'Publisher & open repositories', data: oaRepositoryPublisher },
@@ -84,12 +96,16 @@ export default function Home() {
         ];
         optionsCopy.colors = ['#ead737', '#91ae4f', '#19905b'];
         optionsCopy.title = { text: `Distribution of the open access rate of publications in ${countryLabel} according to OpenAlex` };
-        optionsCopy.plotOptions.column.dataLabels = { enabled: true, formatter() {
-          return Number(this.y).toFixed(0).concat(' %');
-        }};
-        optionsCopy.yAxis.stackLabels = { enabled: true, formatter() {
-          return Number(this.total).toFixed(0).concat(' %');
-        }};
+        optionsCopy.plotOptions.column.dataLabels = {
+          enabled: true, formatter() {
+            return Number(this.y).toFixed(0).concat(' %');
+          }
+        };
+        optionsCopy.yAxis.stackLabels = {
+          enabled: true, formatter() {
+            return Number(this.total).toFixed(0).concat(' %');
+          }
+        };
         setOptions(optionsCopy);
         setIsLoading(false);
       }
@@ -98,29 +114,42 @@ export default function Home() {
   }, [country]);
 
   return (
-    <Container className="fr-my-15w">
+    <Container fluid className="fr-my-15w">
       <Title as="h1">
         BSOpenAlex
       </Title>
-      <SearchableSelect
-        onChange={(e) => setCountry(e)}
-        options={countries.map((item) => ({ value: item.value, label: `${item.label} (${item.count.toLocaleString()})` }))}
-        selected={country}
-      />
-      {isLoading && (
-        <div
-          className="graph-container text-center"
-          style={{ height: '400px' }}
-        >
-          <Loader />
-        </div>
-      )}
-      {!isLoading && (
-        <HighchartsReact
-          highcharts={Highcharts}
-          options={options}
-        />
-      )}
+      <Row>
+        <Col>
+          <SearchableSelect
+            onChange={(e) => setCountry(e)}
+            options={countries.map((item) => ({ value: item.value, label: `${item.label} (${item.count.toLocaleString()})` }))}
+            selected={country}
+          />
+          {isLoading && (
+            <div
+              className="graph-container text-center"
+              style={{ height: '400px' }}
+            >
+              <Loader />
+            </div>
+          )}
+          {!isLoading && (
+            <HighchartsReact
+              highcharts={Highcharts}
+              options={options}
+            />
+          )}
+        </Col>
+        <Col>
+          <iframe
+            id="publi.general.voies-ouverture.chart-repartition-taux"
+            title="Distribution of the open access rate of publications in France, with a Crossref DOI, per publication year and by OA route (observed in 2022)"
+            width="100%"
+            height="600"
+            src="https://frenchopensciencemonitor.esr.gouv.fr/integration/en/publi.general.voies-ouverture.chart-repartition-taux?displayComment=false&displayFooter=false"></iframe>
+        </Col>
+      </Row>
+
     </Container>
   );
 }
