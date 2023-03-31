@@ -13,13 +13,6 @@ const sleepDuration = 1000;
 // eslint-disable-next-line no-promise-executor-return
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-const getCountries = async () => {
-  const response = await fetch(`${api}?group_by=institutions.country_code`);
-  const data = await response.json();
-  const countries = data.group_by.filter((item) => item.key !== 'unknown').map((item) => ({ value: item.key.toLowerCase(), label: item.key_display_name, count: item.count }));
-  return countries;
-};
-
 export default function OAStatusDistribution() {
   const [countries, setCountries] = useState([]);
   const [country, setCountry] = useState('');
@@ -77,11 +70,10 @@ export default function OAStatusDistribution() {
       if (country && country !== '') {
         setIsLoading(true);
         const countryLabel = countries.find((item) => item.value === country).label;
+        const years = ['2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021'];
         const oaRepository = [];
         const oaPublisher = [];
         const oaRepositoryPublisher = [];
-        const years = ['2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021'];
-        // eslint-disable-next-line no-restricted-syntax
         for (const year of years) {
           const response1 = await fetch(`${api}?filter=institutions.country_code:${country},publication_year:${year},has_doi:true&group_by=best_oa_location.is_oa&mailto=${mailto}`);
           const data1 = await response1.json();
