@@ -4,12 +4,13 @@ import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import { useEffect, useState } from 'react';
 
+import Chart from '../components/Chart';
 import Loader from '../components/Loader';
 
 const api = 'https://api.openalex.org/works';
 const defaultCountry = 'fr';
 const mailto = 'bso@recherche.gouv.fr';
-const sleepDuration = 500;
+const sleepDuration = 1000;
 
 // eslint-disable-next-line no-promise-executor-return
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
@@ -51,7 +52,10 @@ export default function Home() {
       title: {
         text: 'Open access rate',
       },
-    }
+    },
+    credits: {
+      enabled: false,
+    },
   });
 
   useEffect(() => {
@@ -116,7 +120,7 @@ export default function Home() {
   return (
     <Container fluid className="fr-my-15w">
       <Title as="h1">
-        BSOpenAlex
+        BSO OpenAlex
       </Title>
       <Row>
         <Col>
@@ -149,7 +153,11 @@ export default function Home() {
             src="https://frenchopensciencemonitor.esr.gouv.fr/integration/en/publi.general.voies-ouverture.chart-repartition-taux?displayComment=false&displayFooter=false"></iframe>
         </Col>
       </Row>
-
+      <Row>
+        <Col>
+          <Chart />
+        </Col>
+      </Row>
     </Container>
   );
 }
