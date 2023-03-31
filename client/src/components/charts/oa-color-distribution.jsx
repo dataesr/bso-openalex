@@ -3,7 +3,7 @@ import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import { useEffect, useState } from 'react';
 
-import Loader from '../Loader';
+import Loader from '../loader';
 
 const api = 'https://api.openalex.org/works';
 const country = 'fr';
@@ -13,7 +13,7 @@ const sleepDuration = 1000;
 // eslint-disable-next-line no-promise-executor-return
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-export default function Chart() {
+export default function OAColorDistribution() {
   const [isLoading, setIsLoading] = useState(false);
   const [options, setOptions] = useState({
     chart: {
