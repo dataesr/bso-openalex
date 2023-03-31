@@ -59,19 +59,16 @@ export default function Chart() {
       const hybrid = [];
       const unknown = [];
       for (const year of years) {
-        const response1 = await fetch(`${api}?filter=institutions.country_code:${country},publication_year:${year},has_doi:true&group_by=open_access.oa_status&mailto=${mailto}`);
-        const data = await response1.json();
-        // oa = green + gold + bronze + hybrid
-        const oaTotal = data.group_by.find((item) => item.key === 'green').count + data.group_by.find((item) => item.key === 'gold').count + data.group_by.find((item) => item.key === 'bronze').count + data.group_by.find((item) => item.key === 'hybrid').count;
-        // total = oa + closed
-        const total = oaTotal + data.group_by.find((item) => item.key === 'closed').count;
+        const response = await fetch(`${api}?filter=institutions.country_code:${country},publication_year:${year},has_doi:true&group_by=open_access.oa_status&mailto=${mailto}`);
+        const data = await response.json();
+        const total = data.group_by.reduce((acc, curr) => acc + curr.count, 0);
+        closed.push((data.group_by.find((item) => item.key === 'closed').count / total) * 100);
+        green.push((data.group_by.find((item) => item.key === 'green').count / total) * 100);
+        gold.push((data.group_by.find((item) => item.key === 'gold').count / total) * 100);
+        bronze.push((data.group_by.find((item) => item.key === 'bronze').count / total) * 100);
+        hybrid.push((data.group_by.find((item) => item.key === 'hybrid').count / total) * 100);
+        unknown.push((data.group_by.find((item) => item.key === 'unknown').count / total) * 100);
         await sleep(sleepDuration);
-        closed.push(data.group_by.find((item) => item.key === 'closed').count);
-        green.push(data.group_by.find((item) => item.key === 'green').count);
-        gold.push(data.group_by.find((item) => item.key === 'gold').count);
-        bronze.push(data.group_by.find((item) => item.key === 'bronze').count);
-        hybrid.push(data.group_by.find((item) => item.key === 'hybrid').count);
-        unknown.push(data.group_by.find((item) => item.key === 'unknown').count);
       }
       const optionsCopy = JSON.parse(JSON.stringify(options));
       optionsCopy.xAxis.categories = years;
@@ -79,36 +76,12 @@ export default function Chart() {
         { name: 'Closed', data: closed },
         { name: 'Green', data: green },
         { name: 'Gold', data: gold },
-        { name: 'Bronze', bronze },
-        { name: 'Hybrid', hybrid },
+        { name: 'Bronze', data: bronze },
+        { name: 'Hybrid', data: hybrid },
         { name: 'Unknown', data: unknown },
       ];
-      setOptions(optionsCopy);
-      setIsLoading(false);
-      /*
-      for (const year of years) {
-        const response1 = await fetch(`${api}?filter=institutions.country_code:${country},publication_year:${year}&group_by=best_oa_location.is_oa&mailto=${mailto}`);
-        const data1 = await response1.json();
-        const oaTotal = data1.group_by.find((item) => item.key === 'true').count;
-        const total = data1.group_by.find((item) => item.key === 'true').count + data1.group_by.find((item) => item.key === 'unknown').count;
-        const response2 = await fetch(`${api}?filter=institutions.country_code:${country},publication_year:${year},best_oa_location.is_oa:true&group_by=locations.source.type&mailto=${mailto}`);
-        const data2 = await response2.json();
-        const y = data2.group_by.find((item) => item.key === 'repository').count;
-        const z = data2.group_by.find((item) => item.key === 'journal').count;
-        oaRepository.push((oaTotal - z) / total * 100);
-        oaPublisher.push((oaTotal - y) / total * 100);
-        oaRepositoryPublisher.push((z + y - oaTotal) / total * 100);
-        await sleep(sleepDuration);
-      }
-      const optionsCopy = JSON.parse(JSON.stringify(options));
-      optionsCopy.xAxis.categories = years;
-      optionsCopy.series = [
-        { name: 'Publisher', data: oaPublisher },
-        { name: 'Publisher & open repositories', data: oaRepositoryPublisher },
-        { name: 'Open repositories', data: oaRepository },
-      ];
-      optionsCopy.colors = ['#ead737', '#91ae4f', '#19905b'];
-      optionsCopy.title = { text: `Distribution of the open access rate of publications in ${countryLabel} according to OpenAlex` };
+      optionsCopy.colors = ['black', 'green', 'yellow', 'orange', 'pink', 'grey'];
+      optionsCopy.title = { text: `Distribution of the open access colors in France according to OpenAlex` };
       optionsCopy.plotOptions.column.dataLabels = {
         enabled: true, formatter() {
           return Number(this.y).toFixed(0).concat(' %');
@@ -121,7 +94,6 @@ export default function Chart() {
       };
       setOptions(optionsCopy);
       setIsLoading(false);
-      */
     };
     getData();
   }, []);

@@ -78,11 +78,11 @@ export default function Home() {
         const years = ['2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021'];
         // eslint-disable-next-line no-restricted-syntax
         for (const year of years) {
-          const response1 = await fetch(`${api}?filter=institutions.country_code:${country},publication_year:${year}&group_by=best_oa_location.is_oa&mailto=${mailto}`);
+          const response1 = await fetch(`${api}?filter=institutions.country_code:${country},publication_year:${year},has_doi:true&group_by=best_oa_location.is_oa&mailto=${mailto}`);
           const data1 = await response1.json();
           const oaTotal = data1.group_by.find((item) => item.key === 'true').count;
           const total = data1.group_by.find((item) => item.key === 'true').count + data1.group_by.find((item) => item.key === 'unknown').count;
-          const response2 = await fetch(`${api}?filter=institutions.country_code:${country},publication_year:${year},best_oa_location.is_oa:true&group_by=locations.source.type&mailto=${mailto}`);
+          const response2 = await fetch(`${api}?filter=institutions.country_code:${country},publication_year:${year},has_doi:true,best_oa_location.is_oa:true&group_by=locations.source.type&mailto=${mailto}`);
           const data2 = await response2.json();
           const y = data2.group_by.find((item) => item.key === 'repository').count;
           const z = data2.group_by.find((item) => item.key === 'journal').count;
