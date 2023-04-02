@@ -96,7 +96,7 @@ export default function OAStatusDistribution() {
           { name: 'Open repositories', data: oaRepository },
         ];
         optionsCopy.colors = ['#ead737', '#91ae4f', '#19905b'];
-        optionsCopy.title = { text: `Distribution of the open access rate of publications in ${countryLabel} according to OpenAlex` };
+        optionsCopy.title = { text: `Distribution of the open access status of publications with doi in ${countryLabel} according to OpenAlex` };
         optionsCopy.plotOptions.column.dataLabels = {
           enabled: true, formatter() {
             return Number(this.y).toFixed(0).concat(' %');
