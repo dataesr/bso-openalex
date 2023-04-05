@@ -1,0 +1,34 @@
+name: Staging deployment
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build static
+        id: build
+        run: npm run build --workspace=client
+      - name: S3 deployment
+        id: s3-deploy
+        uses: dataesr/ovh-s3-deploy
+        with:
+          access_key: ${{ secrets.S3_ACCESS_KEY }}
+          secret_key: ${{ secrets.S3_SECRET_KEY }}
+          source: client/dist
+
+  notify:
+    needs: deploy
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: dataesr/mm-notifier-action@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          mattermost_webhook_url: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
+          mattermost_channel: bso-bot
+          deployment_url: http://dataesr-bso-openalex.s3-website.gra.io.cloud.ovh.net
