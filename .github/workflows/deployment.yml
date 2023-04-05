@@ -15,7 +15,7 @@ jobs:
         run: npm run build --workspace=client
       - name: S3 deployment
         id: s3-deploy
-        uses: dataesr/ovh-s3-deploy
+        uses: dataesr/ovh-s3-deploy@main
         with:
           access_key: ${{ secrets.S3_ACCESS_KEY }}
           secret_key: ${{ secrets.S3_SECRET_KEY }}
