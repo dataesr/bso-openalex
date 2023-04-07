@@ -1,4 +1,4 @@
-import { Col, Container, Row, SearchableSelect, Title } from '@dataesr/react-dsfr';
+import { Col, Container, Highlight, Row, SearchableSelect } from '@dataesr/react-dsfr';
 import { useEffect, useState } from 'react';
 
 import OAColorDistribution from '../components/charts/oa-color-distribution';
@@ -39,9 +39,11 @@ export default function Home() {
 
   return (
     <Container fluid className="fr-my-15w">
-      <Title as="h1">
-        BSO OpenAlex
-      </Title>
+      <Highlight colorFamily="yellow-tournesol" size="sm" className="fr-ml-0 fr-my-1w">
+        <i>
+          The institution parsing in OpenAlex is also still in development, which results in lots af raw affiliation not matched to any country/institution, or even mismatched to a wrong country/institution.
+        </i>
+      </Highlight>
       <Row>
         <Col>
           <SearchableSelect
