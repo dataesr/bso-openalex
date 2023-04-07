@@ -1,5 +1,4 @@
 /* eslint-disable no-await-in-loop */
-import { SearchableSelect } from '@dataesr/react-dsfr';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import { useEffect, useState } from 'react';
@@ -7,16 +6,13 @@ import { useEffect, useState } from 'react';
 import Loader from '../loader';
 
 const api = 'https://api.openalex.org/works';
-const defaultCountry = 'fr';
 const mailto = 'bso@recherche.gouv.fr';
 const sleepDuration = 1000;
 
 // eslint-disable-next-line no-promise-executor-return
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-export default function OAColorDistribution() {
-  const [countries, setCountries] = useState([]);
-  const [country, setCountry] = useState('');
+const OAColorDistribution = ({ countryCode, countryLabel }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [options, setOptions] = useState({
     chart: {
@@ -50,27 +46,10 @@ export default function OAColorDistribution() {
     },
   });
 
-  const getCountries = async () => {
-    const response = await fetch(`${api}?group_by=institutions.country_code`);
-    const data = await response.json();
-    const countries = data.group_by.filter((item) => item.key !== 'unknown').map((item) => ({ value: item.key.toLowerCase(), label: item.key_display_name, count: item.count }));
-    return countries;
-  };
-
-  useEffect(() => {
-    async function getData() {
-      const data = await getCountries();
-      setCountries(data);
-      setCountry(data.find((item) => item.value === defaultCountry).value);
-    }
-    getData();
-  }, []);
-
   useEffect(() => {
     const getData = async () => {
-      if (country && country !== '') {
+      if (countryCode && countryCode !== '') {
         setIsLoading(true);
-        const countryLabel = countries.find((item) => item.value === country).label;
         const years = ['2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021'];
         const closed = [];
         const green = [];
@@ -79,7 +58,7 @@ export default function OAColorDistribution() {
         const hybrid = [];
         const unknown = [];
         for (const year of years) {
-          const response = await fetch(`${api}?filter=institutions.country_code:${country},publication_year:${year},has_doi:true&group_by=open_access.oa_status&mailto=${mailto}`);
+          const response = await fetch(`${api}?filter=institutions.country_code:${countryCode},publication_year:${year},has_doi:true&group_by=open_access.oa_status&mailto=${mailto}`);
           const data = await response.json();
           const total = data.group_by.reduce((acc, curr) => acc + curr.count, 0);
           closed.push((data.group_by.find((item) => item.key === 'closed').count / total) * 100);
@@ -117,15 +96,10 @@ export default function OAColorDistribution() {
       };
     };
     getData();
-  }, [country]);
+  }, [countryCode, countryLabel]);
 
   return (
     <>
-      <SearchableSelect
-        onChange={(e) => setCountry(e)}
-        options={countries.map((item) => ({ value: item.value, label: `${item.label} (${item.count.toLocaleString()})` }))}
-        selected={country}
-      />
       {isLoading && (
         <div
           className="graph-container text-center"
@@ -143,3 +117,5 @@ export default function OAColorDistribution() {
     </>
   );
 }
+
+export default OAColorDistribution;

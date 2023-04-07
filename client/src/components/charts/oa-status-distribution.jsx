@@ -6,16 +6,13 @@ import { useEffect, useState } from 'react';
 import Loader from '../loader';
 
 const api = 'https://api.openalex.org/works';
-const defaultCountry = 'fr';
 const mailto = 'bso@recherche.gouv.fr';
 const sleepDuration = 1000;
 
 // eslint-disable-next-line no-promise-executor-return
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-export default function OAStatusDistribution() {
-  const [countries, setCountries] = useState([]);
-  const [country, setCountry] = useState('');
+const OAStatusDistribution = ({ countryCode, countryLabel }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [options, setOptions] = useState({
     chart: {
@@ -49,37 +46,20 @@ export default function OAStatusDistribution() {
     },
   });
 
-  const getCountries = async () => {
-    const response = await fetch(`${api}?group_by=institutions.country_code`);
-    const data = await response.json();
-    const countries = data.group_by.filter((item) => item.key !== 'unknown').map((item) => ({ value: item.key.toLowerCase(), label: item.key_display_name, count: item.count }));
-    return countries;
-  };
-
-  useEffect(() => {
-    async function getData() {
-      const data = await getCountries();
-      setCountries(data);
-      setCountry(data.find((item) => item.value === defaultCountry).value);
-    }
-    getData();
-  }, []);
-
   useEffect(() => {
     const getData = async () => {
-      if (country && country !== '') {
+      if (countryCode && countryCode !== '') {
         setIsLoading(true);
-        const countryLabel = countries.find((item) => item.value === country).label;
         const years = ['2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021'];
         const oaRepository = [];
         const oaPublisher = [];
         const oaRepositoryPublisher = [];
         for (const year of years) {
-          const response1 = await fetch(`${api}?filter=institutions.country_code:${country},publication_year:${year},has_doi:true&group_by=best_oa_location.is_oa&mailto=${mailto}`);
+          const response1 = await fetch(`${api}?filter=institutions.country_code:${countryCode},publication_year:${year},has_doi:true&group_by=best_oa_location.is_oa&mailto=${mailto}`);
           const data1 = await response1.json();
           const oaTotal = data1.group_by.find((item) => item.key === 'true').count;
           const total = data1.group_by.find((item) => item.key === 'true').count + data1.group_by.find((item) => item.key === 'unknown').count;
-          const response2 = await fetch(`${api}?filter=institutions.country_code:${country},publication_year:${year},has_doi:true,best_oa_location.is_oa:true&group_by=locations.source.type&mailto=${mailto}`);
+          const response2 = await fetch(`${api}?filter=institutions.country_code:${countryCode},publication_year:${year},has_doi:true,best_oa_location.is_oa:true&group_by=locations.source.type&mailto=${mailto}`);
           const data2 = await response2.json();
           const y = data2.group_by.find((item) => item.key === 'repository').count;
           const z = data2.group_by.find((item) => item.key === 'journal').count;
@@ -136,15 +116,10 @@ export default function OAStatusDistribution() {
       }
     };
     getData();
-  }, [country]);
+  }, [countryCode, countryLabel]);
 
   return (
     <>
-      <SearchableSelect
-        onChange={(e) => setCountry(e)}
-        options={countries.map((item) => ({ value: item.value, label: `${item.label} (${item.count.toLocaleString()})` }))}
-        selected={country}
-      />
       {isLoading && (
         <div
           className="graph-container text-center"
@@ -162,3 +137,5 @@ export default function OAStatusDistribution() {
     </>
   );
 }
+
+export default OAStatusDistribution;
