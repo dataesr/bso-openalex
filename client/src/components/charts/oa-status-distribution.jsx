@@ -38,7 +38,7 @@ export default function OAStatusDistribution() {
     },
     yAxis: {
       labels: {
-        format: '{text} %',
+        format: '{text}%',
       },
       title: {
         text: 'Open access rate',
@@ -83,9 +83,27 @@ export default function OAStatusDistribution() {
           const data2 = await response2.json();
           const y = data2.group_by.find((item) => item.key === 'repository').count;
           const z = data2.group_by.find((item) => item.key === 'journal').count;
-          oaRepository.push((oaTotal - z) / total * 100);
-          oaPublisher.push((oaTotal - y) / total * 100);
-          oaRepositoryPublisher.push((z + y - oaTotal) / total * 100);
+          oaRepository.push({
+            y: (oaTotal - z) / total * 100,
+            y_abs: oaTotal - z,
+            y_oa: oaTotal,
+            y_tot: total,
+            year,
+          });
+          oaPublisher.push({
+            y: (oaTotal - y) / total * 100,
+            y_abs: oaTotal - y,
+            y_oa: oaTotal,
+            y_tot: total,
+            year,
+          });
+          oaRepositoryPublisher.push({
+            y: (z + y - oaTotal) / total * 100,
+            y_abs: oaTotal - y,
+            y_oa: oaTotal,
+            y_tot: total,
+            year,
+          });
           await sleep(sleepDuration);
         }
         const optionsCopy = JSON.parse(JSON.stringify(options));
@@ -98,14 +116,20 @@ export default function OAStatusDistribution() {
         optionsCopy.colors = ['#ead737', '#91ae4f', '#19905b'];
         optionsCopy.title = { text: `Distribution of the open access status of publications with doi in ${countryLabel} according to OpenAlex` };
         optionsCopy.plotOptions.column.dataLabels = {
-          enabled: true, formatter() {
-            return Number(this.y).toFixed(0).concat(' %');
+          enabled: true,
+          formatter() {
+            return Number(this.y).toFixed(0).concat('%');
           }
         };
         optionsCopy.yAxis.stackLabels = {
-          enabled: true, formatter() {
-            return Number(this.total).toFixed(0).concat(' %');
+          enabled: true,
+          formatter() {
+            return Number(this.total).toFixed(0).concat('%');
           }
+        };
+        optionsCopy.tooltip = {
+          headerFormat: '',
+          pointFormat: '<b>Publication year {point.year}</b><br>• Open access rate<br>with hosting {point.series.name}:<br>{point.y:.2f}% ({point.y_abs} / {point.y_tot})<br>• Total open access rate:<br>{point.stackTotal:.2f}% ({point.y_oa} / {point.y_tot})'
         };
         setOptions(optionsCopy);
         setIsLoading(false);
