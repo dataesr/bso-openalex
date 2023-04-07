@@ -5,8 +5,9 @@ import { useEffect, useState } from 'react';
 
 import Loader from '../loader';
 
+const { VITE_OPENALEX_MAILTO } = import.meta.env;
+
 const api = 'https://api.openalex.org/works';
-const mailto = 'bso@recherche.gouv.fr';
 const sleepDuration = 1000;
 
 // eslint-disable-next-line no-promise-executor-return
@@ -58,7 +59,7 @@ const OAColorDistribution = ({ countryCode, countryLabel }) => {
         const hybrid = [];
         const unknown = [];
         for (const year of years) {
-          const response = await fetch(`${api}?filter=institutions.country_code:${countryCode},publication_year:${year},has_doi:true&group_by=open_access.oa_status&mailto=${mailto}`);
+          const response = await fetch(`${api}?filter=institutions.country_code:${countryCode},publication_year:${year},has_doi:true&group_by=open_access.oa_status&mailto=${VITE_OPENALEX_MAILTO}`);
           const data = await response.json();
           const total = data.group_by.reduce((acc, curr) => acc + curr.count, 0);
           const yAbsClosed = data.group_by.find((item) => item.key === 'closed').count;

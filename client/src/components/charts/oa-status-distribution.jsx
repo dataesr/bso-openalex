@@ -5,8 +5,9 @@ import { useEffect, useState } from 'react';
 
 import Loader from '../loader';
 
+const { VITE_OPENALEX_MAILTO } = import.meta.env;
+
 const api = 'https://api.openalex.org/works';
-const mailto = 'bso@recherche.gouv.fr';
 const sleepDuration = 1000;
 
 // eslint-disable-next-line no-promise-executor-return
@@ -55,11 +56,11 @@ const OAStatusDistribution = ({ countryCode, countryLabel }) => {
         const oaPublisher = [];
         const oaRepositoryPublisher = [];
         for (const year of years) {
-          const response1 = await fetch(`${api}?filter=institutions.country_code:${countryCode},publication_year:${year},has_doi:true&group_by=best_oa_location.is_oa&mailto=${mailto}`);
+          const response1 = await fetch(`${api}?filter=institutions.country_code:${countryCode},publication_year:${year},has_doi:true&group_by=best_oa_location.is_oa&mailto=${VITE_OPENALEX_MAILTO}`);
           const data1 = await response1.json();
           const oaTotal = data1.group_by.find((item) => item.key === 'true').count;
           const total = data1.group_by.find((item) => item.key === 'true').count + data1.group_by.find((item) => item.key === 'unknown').count;
-          const response2 = await fetch(`${api}?filter=institutions.country_code:${countryCode},publication_year:${year},has_doi:true,best_oa_location.is_oa:true&group_by=locations.source.type&mailto=${mailto}`);
+          const response2 = await fetch(`${api}?filter=institutions.country_code:${countryCode},publication_year:${year},has_doi:true,best_oa_location.is_oa:true&group_by=locations.source.type&mailto=${VITE_OPENALEX_MAILTO}`);
           const data2 = await response2.json();
           const y = data2.group_by.find((item) => item.key === 'repository').count;
           const z = data2.group_by.find((item) => item.key === 'journal').count;
