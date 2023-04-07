@@ -80,7 +80,7 @@ const OAColorDistribution = ({ countryCode, countryLabel }) => {
           { name: 'Unknown', data: unknown },
         ];
         optionsCopy.colors = ['black', 'green', 'yellow', 'orange', 'pink', 'grey'];
-        optionsCopy.title = { text: `Distribution of the open access colors of publications with doi in ${countryLabel} according to OpenAlex` };
+        optionsCopy.title = { text: `Distribution of the open access colors of publications with DOI in ${countryLabel} according to OpenAlex` };
         optionsCopy.plotOptions.column.dataLabels = {
           enabled: true, formatter() {
             return Number(this.y).toFixed(0).concat(' %');

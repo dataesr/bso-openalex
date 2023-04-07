@@ -94,7 +94,7 @@ const OAStatusDistribution = ({ countryCode, countryLabel }) => {
           { name: 'Open repositories', data: oaRepository },
         ];
         optionsCopy.colors = ['#ead737', '#91ae4f', '#19905b'];
-        optionsCopy.title = { text: `Distribution of the open access status of publications with doi in ${countryLabel} according to OpenAlex` };
+        optionsCopy.title = { text: `Distribution of the open access status of publications with DOI in ${countryLabel} according to OpenAlex` };
         optionsCopy.plotOptions.column.dataLabels = {
           enabled: true,
           formatter() {
