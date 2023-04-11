@@ -1,17 +1,19 @@
 import { Col, Container, Highlight, Row, SearchableSelect } from '@dataesr/react-dsfr';
 import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import OAColorDistribution from '../components/charts/oa-color-distribution';
 import OAStatusDistribution from '../components/charts/oa-status-distribution';
 
 const api = 'https://api.openalex.org/works';
-const defaultCountryCode = 'fr';
 const mailto = 'bso@recherche.gouv.fr';
 
 export default function Home() {
+  const navigate = useNavigate();
+  const { countryCode } = useParams();
+  let countryLabel = '';
+
   const [countries, setCountries] = useState([]);
-  const [countryCode, setCountryCode] = useState();
-  const [countryLabel, setCountryLabel] = useState();
 
   const getCountries = async () => {
     const response = await fetch(`${api}?group_by=institutions.country_code&mailto=${mailto}`);
@@ -20,10 +22,9 @@ export default function Home() {
     return countries;
   };
 
-  const changeSelectedCountry = (e) => {
-    if (e && e.length > 0) {
-      setCountryCode(e);
-      setCountryLabel(countries.find((item) => item.value === e).label);
+  const changeSelectedCountry = (selectedCountryCode) => {
+    if (selectedCountryCode && selectedCountryCode.length > 0) {
+      navigate(`/${selectedCountryCode}`);
     }
   }
 
@@ -31,8 +32,7 @@ export default function Home() {
     async function getData() {
       const data = await getCountries();
       setCountries(data);
-      setCountryCode(data.find((item) => item.value === defaultCountryCode).value);
-      setCountryLabel(data.find((item) => item.value === defaultCountryCode).label);
+      countryLabel = data.find((item) => item.value === countryCode).label;
     }
     getData();
   }, []);
