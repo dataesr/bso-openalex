@@ -20,9 +20,10 @@ const OAStatusDistribution = ({ countryCode, countryLabel }) => {
       type: 'column',
     },
     legend: {
-      verticalAlign: 'top',
       align: 'left',
       reversed: true,
+      title: { text: 'Hosting type' },
+      verticalAlign: 'top',
     },
     plotOptions: {
       column: {

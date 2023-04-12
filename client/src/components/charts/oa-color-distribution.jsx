@@ -20,9 +20,10 @@ const OAColorDistribution = ({ countryCode, countryLabel }) => {
       type: 'column',
     },
     legend: {
-      verticalAlign: 'top',
       align: 'left',
       reversed: true,
+      title: { text: 'Color' },
+      verticalAlign: 'top',
     },
     plotOptions: {
       column: {
