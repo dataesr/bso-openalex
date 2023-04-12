@@ -13,7 +13,7 @@ const sleepDuration = 1000;
 // eslint-disable-next-line no-promise-executor-return
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-const OAColorDistribution = ({ countryCode, countryLabel }) => {
+const OAColorDistribution = ({ countryCodes, countryLabels }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [options, setOptions] = useState({
     chart: {
@@ -50,7 +50,7 @@ const OAColorDistribution = ({ countryCode, countryLabel }) => {
 
   useEffect(() => {
     const getData = async () => {
-      if (countryCode && countryCode !== '') {
+      if (countryCodes && countryCodes !== '') {
         setIsLoading(true);
         const years = ['2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021'];
         const closed = [];
@@ -60,7 +60,7 @@ const OAColorDistribution = ({ countryCode, countryLabel }) => {
         const hybrid = [];
         const unknown = [];
         for (const year of years) {
-          const response = await fetch(`${api}?filter=institutions.country_code:${countryCode},publication_year:${year},has_doi:true&group_by=open_access.oa_status&mailto=${VITE_OPENALEX_MAILTO}`);
+          const response = await fetch(`${api}?filter=institutions.country_code:${countryCodes},publication_year:${year},has_doi:true&group_by=open_access.oa_status&mailto=${VITE_OPENALEX_MAILTO}`);
           const data = await response.json();
           const total = data.group_by.reduce((acc, curr) => acc + curr.count, 0);
           const yAbsClosed = data.group_by.find((item) => item.key === 'closed')?.count || 0;
@@ -118,7 +118,7 @@ const OAColorDistribution = ({ countryCode, countryLabel }) => {
           { name: 'Unknown', data: unknown },
         ];
         optionsCopy.colors = ['black', 'green', 'yellow', 'orange', 'pink', 'grey'];
-        optionsCopy.title = { text: `Distribution of the open access colors of publications with DOI in ${countryLabel} according to OpenAlex` };
+        optionsCopy.title = { text: `Distribution of the open access colors of publications with DOI in ${countryLabels} according to OpenAlex` };
         optionsCopy.plotOptions.column.dataLabels = {
           enabled: true, formatter() {
             return Number(this.y).toFixed(0).concat(' %');
@@ -138,7 +138,7 @@ const OAColorDistribution = ({ countryCode, countryLabel }) => {
       };
     };
     getData();
-  }, [countryCode, countryLabel]);
+  }, [countryCodes, countryLabels]);
 
   return (
     <>

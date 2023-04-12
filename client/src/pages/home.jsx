@@ -1,38 +1,48 @@
-import { Col, Container, Highlight, Row, SearchableSelect } from '@dataesr/react-dsfr';
+import { Button, Col, Container, Highlight, Row, SearchableSelect, Tag, TagGroup } from '@dataesr/react-dsfr';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import OAColorDistribution from '../components/charts/oa-color-distribution';
 import OAStatusDistribution from '../components/charts/oa-status-distribution';
 
+const { VITE_OPENALEX_MAILTO } = import.meta.env;
+
 const api = 'https://api.openalex.org/works';
-const mailto = 'bso@recherche.gouv.fr';
 
 export default function Home() {
   const navigate = useNavigate();
-  const { countryCode } = useParams();
-  let countryLabel = '';
+  let { countryCodes } = useParams();
 
   const [countries, setCountries] = useState([]);
+  const [selectedCountries, setSelectedCountries] = useState(countryCodes.split(',').map((item) => item.trim()));
 
-  const getCountries = async () => {
-    const response = await fetch(`${api}?group_by=institutions.country_code&mailto=${mailto}`);
+  const loadAllCountries = async () => {
+    const response = await fetch(`${api}?group_by=institutions.country_code&mailto=${VITE_OPENALEX_MAILTO}`);
     const data = await response.json();
     const countries = data.group_by.filter((item) => item.key !== 'unknown').map((item) => ({ value: item.key.toLowerCase(), label: item.key_display_name, count: item.count }));
     return countries;
   };
 
-  const changeSelectedCountry = (selectedCountryCode) => {
-    if (selectedCountryCode && selectedCountryCode.length > 0) {
-      navigate(`/${selectedCountryCode}`);
+  const redirect = () => {
+    if (selectedCountries && selectedCountries.length > 0) {
+      navigate(`/${selectedCountries.join(',')}`);
     }
+  }
+
+  const addSelectedCountry = (selectedCountry) => {
+    if (selectedCountry && selectedCountry.length > 0) {
+      setSelectedCountries([...new Set([...selectedCountries, selectedCountry])].sort())
+    }
+  }
+
+  const removeSelectedCountry = (selectedCountry) => {
+    setSelectedCountries(selectedCountries.filter((item) => item !== selectedCountry))
   }
 
   useEffect(() => {
     async function getData() {
-      const data = await getCountries();
+      const data = await loadAllCountries();
       setCountries(data);
-      countryLabel = data.find((item) => item.value === countryCode).label;
     }
     getData();
   }, []);
@@ -47,17 +57,34 @@ export default function Home() {
       <Row>
         <Col>
           <SearchableSelect
-            onChange={(e) => changeSelectedCountry(e)}
+            onChange={(selectedCountry) => addSelectedCountry(selectedCountry)}
             options={countries.map((item) => ({ value: item.value, label: `${item.label} (${item.count.toLocaleString()})` }))}
-            selected={countryCode}
+            selected={countries[0]}
           />
+          <TagGroup>
+            {selectedCountries.map((selectedCountry) => (
+              <Tag key={selectedCountry}>
+                {selectedCountry}
+                <Button
+                  onClick={() => removeSelectedCountry(selectedCountry)}
+                  icon="ri-close-line"
+                  tertiary
+                  hasBorder={false}
+                  size="sm"
+                />
+              </Tag>
+            ))}
+          </TagGroup>
+          <Button onClick={redirect}>
+            Search
+          </Button>
         </Col>
       </Row>
       <Row>
         <Col>
-          <OAStatusDistribution countryCode={countryCode} countryLabel={countryLabel} />
+          <OAStatusDistribution countryCodes={countryCodes.replaceAll(',', '|')} countryLabels={countryCodes.replaceAll(',', ', ')} />
         </Col>
-        {countryCode && (countryCode === 'fr') && (
+        {selectedCountries && selectedCountries.includes('fr') && (
           <Col>
             <iframe
               id="publi.general.voies-ouverture.chart-repartition-taux"
@@ -70,7 +97,7 @@ export default function Home() {
       </Row>
       <Row>
         <Col>
-          <OAColorDistribution countryCode={countryCode} countryLabel={countryLabel} />
+          <OAColorDistribution countryCodes={countryCodes.replaceAll(',', '|')} countryLabels={countryCodes.replaceAll(',', ', ')} />
         </Col>
       </Row>
     </Container>

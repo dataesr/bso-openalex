@@ -13,7 +13,7 @@ const sleepDuration = 1000;
 // eslint-disable-next-line no-promise-executor-return
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-const OAStatusDistribution = ({ countryCode, countryLabel }) => {
+const OAStatusDistribution = ({ countryCodes, countryLabels }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [options, setOptions] = useState({
     chart: {
@@ -50,18 +50,18 @@ const OAStatusDistribution = ({ countryCode, countryLabel }) => {
 
   useEffect(() => {
     const getData = async () => {
-      if (countryCode && countryCode !== '') {
+      if (countryCodes && countryCodes !== '') {
         setIsLoading(true);
         const years = ['2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021'];
         const oaRepository = [];
         const oaPublisher = [];
         const oaRepositoryPublisher = [];
         for (const year of years) {
-          const response1 = await fetch(`${api}?filter=institutions.country_code:${countryCode},publication_year:${year},has_doi:true&group_by=best_oa_location.is_oa&mailto=${VITE_OPENALEX_MAILTO}`);
+          const response1 = await fetch(`${api}?filter=institutions.country_code:${countryCodes},publication_year:${year},has_doi:true&group_by=best_oa_location.is_oa&mailto=${VITE_OPENALEX_MAILTO}`);
           const data1 = await response1.json();
           const oaTotal = data1.group_by.find((item) => item.key === 'true').count;
           const total = data1.group_by.find((item) => item.key === 'true').count + data1.group_by.find((item) => item.key === 'unknown').count;
-          const response2 = await fetch(`${api}?filter=institutions.country_code:${countryCode},publication_year:${year},has_doi:true,best_oa_location.is_oa:true&group_by=locations.source.type&mailto=${VITE_OPENALEX_MAILTO}`);
+          const response2 = await fetch(`${api}?filter=institutions.country_code:${countryCodes},publication_year:${year},has_doi:true,best_oa_location.is_oa:true&group_by=locations.source.type&mailto=${VITE_OPENALEX_MAILTO}`);
           const data2 = await response2.json();
           const y = data2.group_by.find((item) => item.key === 'repository').count;
           const z = data2.group_by.find((item) => item.key === 'journal').count;
@@ -96,7 +96,7 @@ const OAStatusDistribution = ({ countryCode, countryLabel }) => {
           { name: 'Open repositories', data: oaRepository },
         ];
         optionsCopy.colors = ['#ead737', '#91ae4f', '#19905b'];
-        optionsCopy.title = { text: `Distribution of the open access status of publications with DOI in ${countryLabel} according to OpenAlex` };
+        optionsCopy.title = { text: `Distribution of the open access status of publications with DOI in ${countryLabels} according to OpenAlex` };
         optionsCopy.plotOptions.column.dataLabels = {
           enabled: true,
           formatter() {
@@ -118,7 +118,7 @@ const OAStatusDistribution = ({ countryCode, countryLabel }) => {
       }
     };
     getData();
-  }, [countryCode, countryLabel]);
+  }, [countryCodes, countryLabels]);
 
   return (
     <>

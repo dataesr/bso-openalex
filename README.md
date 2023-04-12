@@ -1,8 +1,8 @@
 # ReadMe
 
 ## Start
-* `git clone git@github.com:dataesr/bsopenalex.git`
-* `cd bsopenalex`
+* `git clone git@github.com:dataesr/bso-openalex.git`
+* `cd bso-openalex`
 * `npm i`
 * `npm start`
 

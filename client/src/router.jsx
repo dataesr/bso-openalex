@@ -7,8 +7,8 @@ export default function Router() {
   return (
     <Routes>
       <Route element={<Layout />}>
-        <Route path="/:countryCode" element={<Home />} />
-        <Route path="*" element={<Navigate to="/fr" replace />} />
+        <Route path="/:countryCodes" element={<Home />} />
+        <Route path="/" element={<Navigate to="/fr" replace />} />
       </Route>
     </Routes>
   );
