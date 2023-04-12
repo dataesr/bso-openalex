@@ -62,42 +62,42 @@ const OAColorDistribution = ({ countryCode, countryLabel }) => {
           const response = await fetch(`${api}?filter=institutions.country_code:${countryCode},publication_year:${year},has_doi:true&group_by=open_access.oa_status&mailto=${VITE_OPENALEX_MAILTO}`);
           const data = await response.json();
           const total = data.group_by.reduce((acc, curr) => acc + curr.count, 0);
-          const yAbsClosed = data.group_by.find((item) => item.key === 'closed').count;
+          const yAbsClosed = data.group_by.find((item) => item.key === 'closed')?.count || 0;
           closed.push({
             y: yAbsClosed / total * 100,
             y_abs: yAbsClosed,
             y_tot: total,
             year,
           });
-          const yAbsGreen = data.group_by.find((item) => item.key === 'green').count;
+          const yAbsGreen = data.group_by.find((item) => item.key === 'green')?.count || 0;
           green.push({
             y: yAbsGreen / total * 100,
             y_abs: yAbsGreen,
             y_tot: total,
             year,
           });
-          const yAbsGold = data.group_by.find((item) => item.key === 'gold').count;
+          const yAbsGold = data.group_by.find((item) => item.key === 'gold')?.count || 0;
           gold.push({
             y: yAbsGold / total * 100,
             y_abs: yAbsGold,
             y_tot: total,
             year,
           });
-          const yAbsBronze = data.group_by.find((item) => item.key === 'bronze').count;
+          const yAbsBronze = data.group_by.find((item) => item.key === 'bronze')?.count || 0;
           bronze.push({
             y: yAbsBronze / total * 100,
             y_abs: yAbsBronze,
             y_tot: total,
             year,
           });
-          const yAbsHybrid = data.group_by.find((item) => item.key === 'hybrid').count;
+          const yAbsHybrid = data.group_by.find((item) => item.key === 'hybrid')?.count || 0;
           hybrid.push({
             y: yAbsHybrid / total * 100,
             y_abs: yAbsHybrid,
             y_tot: total,
             year,
           });
-          const yAbsUnknown = data.group_by.find((item) => item.key === 'unknown').count;
+          const yAbsUnknown = data.group_by.find((item) => item.key === 'unknown')?.count || 0;
           unknown.push({
             y: yAbsUnknown / total * 100,
             y_abs: yAbsUnknown,
