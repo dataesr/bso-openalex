@@ -14,7 +14,7 @@ export default function Home() {
   let { countryCodes } = useParams();
 
   const [countries, setCountries] = useState([]);
-  const [selectedCountries, setSelectedCountries] = useState(countryCodes.split(',').map((item) => item.trim()));
+  const [selectedCountries, setSelectedCountries] = useState(countryCodes.split(',').map((item) => item.trim().toLowerCase()));
 
   const loadAllCountries = async () => {
     const response = await fetch(`${api}?group_by=institutions.country_code&mailto=${VITE_OPENALEX_MAILTO}`);
@@ -23,15 +23,14 @@ export default function Home() {
     return countries;
   };
 
-  const redirect = () => {
-    if (selectedCountries && selectedCountries.length > 0) {
-      navigate(`/${selectedCountries.join(',')}`);
-    }
-  }
-
   const addSelectedCountry = (selectedCountry) => {
     if (selectedCountry && selectedCountry.length > 0) {
-      setSelectedCountries([...new Set([...selectedCountries, selectedCountry])].sort())
+      if (selectedCountry === 'eu') {
+        selectedCountry = ['at', 'be', 'bg', 'cy', 'cz', 'de', 'dk', 'ee', 'es', 'fi', 'fr', 'gb', 'gr', 'hr', 'hu', 'ie', 'it', 'lv', 'lt', 'lu', 'mt', 'nl', 'pl', 'pt', 'ro', 'sk', 'si', 'se'];
+        setSelectedCountries([...new Set([...selectedCountries, ...selectedCountry])].sort());
+      } else {
+        setSelectedCountries([...new Set([...selectedCountries, selectedCountry])].sort());
+      }
     }
   }
 
@@ -39,9 +38,16 @@ export default function Home() {
     setSelectedCountries(selectedCountries.filter((item) => item !== selectedCountry))
   }
 
+  const redirect = () => {
+    if (selectedCountries && selectedCountries.length > 0) {
+      navigate(`/${selectedCountries.join(',')}`);
+    }
+  }
+
   useEffect(() => {
     async function getData() {
       const data = await loadAllCountries();
+      data.unshift({ value: 'eu', label: 'Europe', count: 0 });
       setCountries(data);
     }
     getData();
