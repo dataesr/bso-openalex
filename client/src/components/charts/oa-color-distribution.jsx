@@ -1,18 +1,15 @@
 /* eslint-disable no-await-in-loop */
-import Highcharts from 'highcharts';
-import HighchartsReact from 'highcharts-react-official';
 import { useEffect, useState } from 'react';
 
-import Loader from '../loader';
-import config from './config.json'
-
-const { VITE_OPENALEX_MAILTO } = import.meta.env;
+import ChartWrapper from './chart-wrapper';
+import config from './config.json';
 
 // eslint-disable-next-line no-promise-executor-return
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const OAColorDistribution = ({ countryCodes, countryLabels }) => {
-  const { api, defaultChartOptions, sleepDuration } = config;
+  const { api, defaultChartOptions, mailto, sleepDuration } = config;
+  const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [options, setOptions] = useState({});
 
@@ -28,7 +25,7 @@ const OAColorDistribution = ({ countryCodes, countryLabels }) => {
         const hybrid = [];
         const unknown = [];
         for (const year of years) {
-          const response = await fetch(`${api}?filter=institutions.country_code:${countryCodes},publication_year:${year},has_doi:true&group_by=open_access.oa_status&mailto=${VITE_OPENALEX_MAILTO}`);
+          const response = await fetch(`${api}?filter=institutions.country_code:${countryCodes},publication_year:${year},has_doi:true&group_by=open_access.oa_status&mailto=${mailto}`);
           const data = await response.json();
           const total = data.group_by.reduce((acc, curr) => acc + curr.count, 0);
           const yAbsClosed = data.group_by.find((item) => item.key === 'closed')?.count || 0;
@@ -75,9 +72,6 @@ const OAColorDistribution = ({ countryCodes, countryLabels }) => {
           });
           await sleep(sleepDuration);
         }
-        console.log(defaultChartOptions);
-        console.log(JSON.stringify(defaultChartOptions));
-        console.log(JSON.parse(JSON.stringify(defaultChartOptions)));
         const optionsCopy = JSON.parse(JSON.stringify(defaultChartOptions));
         optionsCopy.xAxis.categories = years;
         optionsCopy.series = [
@@ -113,22 +107,11 @@ const OAColorDistribution = ({ countryCodes, countryLabels }) => {
   }, [countryCodes, countryLabels]);
 
   return (
-    <>
-      {isLoading && (
-        <div
-          className="graph-container text-center"
-          style={{ height: '400px' }}
-        >
-          <Loader />
-        </div>
-      )}
-      {!isLoading && (
-        <HighchartsReact
-          highcharts={Highcharts}
-          options={options}
-        />
-      )}
-    </>
+    <ChartWrapper
+      isError={isError}
+      isLoading={isLoading}
+      options={options}
+    />
   );
 }
 

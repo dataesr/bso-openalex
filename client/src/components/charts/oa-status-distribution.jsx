@@ -1,18 +1,14 @@
-import { SearchableSelect } from '@dataesr/react-dsfr';
-import Highcharts from 'highcharts';
-import HighchartsReact from 'highcharts-react-official';
 import { useEffect, useState } from 'react';
 
-import Loader from '../loader';
-import config from './config.json'
-
-const { VITE_OPENALEX_MAILTO } = import.meta.env;
+import ChartWrapper from './chart-wrapper';
+import config from './config.json';
 
 // eslint-disable-next-line no-promise-executor-return
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const OAStatusDistribution = ({ countryCodes, countryLabels }) => {
   const { api, defaultChartOptions, sleepDuration } = config;
+  const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [options, setOptions] = useState({});
 
@@ -25,7 +21,7 @@ const OAStatusDistribution = ({ countryCodes, countryLabels }) => {
         const oaPublisher = [];
         const oaRepositoryPublisher = [];
         for (const year of years) {
-          const response1 = await fetch(`${api}?filter=institutions.country_code:${countryCodes},publication_year:${year},has_doi:true&group_by=best_oa_location.is_oa&mailto=${VITE_OPENALEX_MAILTO}`);
+          const response1 = await fetch(`${api}?filter=institutions.country_code:${countryCodes},publication_year:${year},has_doi:true&group_by=best_oa_location.is_oa&mailto=${mailto}`);
           const data1 = await response1.json();
           const oaTotal = data1.group_by.find((item) => item.key === 'true').count;
           const total = data1.group_by.find((item) => item.key === 'true').count + data1.group_by.find((item) => item.key === 'unknown').count;
@@ -90,22 +86,11 @@ const OAStatusDistribution = ({ countryCodes, countryLabels }) => {
   }, [countryCodes, countryLabels]);
 
   return (
-    <>
-      {isLoading && (
-        <div
-          className="graph-container text-center"
-          style={{ height: '400px' }}
-        >
-          <Loader />
-        </div>
-      )}
-      {!isLoading && (
-        <HighchartsReact
-          highcharts={Highcharts}
-          options={options}
-        />
-      )}
-    </>
+    <ChartWrapper
+      isError={isError}
+      isLoading={isLoading}
+      options={options}
+    />
   );
 }
 
