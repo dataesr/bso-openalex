@@ -1,0 +1,35 @@
+{
+  "api": "https://api.openalex.org/works",
+  "defaultChartOptions": {
+    "chart": {
+      "type": "column"
+    },
+    "legend": {
+      "align": "left",
+      "reversed": true,
+      "verticalAlign": "top"
+    },
+    "plotOptions": {
+      "column": {
+        "stacking": "normal"
+      }
+    },
+    "xAxis": {
+      "title": {
+        "text": "Publication year"
+      }
+    },
+    "yAxis": {
+      "labels": {
+        "format": "{text}%"
+      },
+      "title": {
+        "text": "Open access rate"
+      }
+    },
+    "credits": {
+      "enabled": false
+    }
+  },
+  "sleepDuration": 1000
+}

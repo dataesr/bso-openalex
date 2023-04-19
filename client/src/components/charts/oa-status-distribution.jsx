@@ -4,49 +4,17 @@ import HighchartsReact from 'highcharts-react-official';
 import { useEffect, useState } from 'react';
 
 import Loader from '../loader';
+import config from './config.json'
 
 const { VITE_OPENALEX_MAILTO } = import.meta.env;
-
-const api = 'https://api.openalex.org/works';
-const sleepDuration = 1000;
 
 // eslint-disable-next-line no-promise-executor-return
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const OAStatusDistribution = ({ countryCodes, countryLabels }) => {
+  const { api, defaultChartOptions, sleepDuration } = config;
   const [isLoading, setIsLoading] = useState(false);
-  const [options, setOptions] = useState({
-    chart: {
-      type: 'column',
-    },
-    legend: {
-      align: 'left',
-      reversed: true,
-      title: { text: 'Hosting type' },
-      verticalAlign: 'top',
-    },
-    plotOptions: {
-      column: {
-        stacking: 'normal',
-      },
-    },
-    xAxis: {
-      title: {
-        text: 'Publication year',
-      },
-    },
-    yAxis: {
-      labels: {
-        format: '{text}%',
-      },
-      title: {
-        text: 'Open access rate',
-      },
-    },
-    credits: {
-      enabled: false,
-    },
-  });
+  const [options, setOptions] = useState({});
 
   useEffect(() => {
     const getData = async () => {
@@ -88,7 +56,7 @@ const OAStatusDistribution = ({ countryCodes, countryLabels }) => {
           });
           await sleep(sleepDuration);
         }
-        const optionsCopy = JSON.parse(JSON.stringify(options));
+        const optionsCopy = JSON.parse(JSON.stringify(defaultChartOptions));
         optionsCopy.xAxis.categories = years;
         optionsCopy.series = [
           { name: 'Publisher', data: oaPublisher },
@@ -96,6 +64,7 @@ const OAStatusDistribution = ({ countryCodes, countryLabels }) => {
           { name: 'Open repositories', data: oaRepository },
         ];
         optionsCopy.colors = ['#ead737', '#91ae4f', '#19905b'];
+        optionsCopy.legend.title = { text: 'Hosting type' };
         optionsCopy.title = { text: `Distribution of the open access status of publications with DOI in ${countryLabels} according to OpenAlex` };
         optionsCopy.plotOptions.column.dataLabels = {
           enabled: true,

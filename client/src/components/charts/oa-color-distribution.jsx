@@ -4,49 +4,17 @@ import HighchartsReact from 'highcharts-react-official';
 import { useEffect, useState } from 'react';
 
 import Loader from '../loader';
+import config from './config.json'
 
 const { VITE_OPENALEX_MAILTO } = import.meta.env;
-
-const api = 'https://api.openalex.org/works';
-const sleepDuration = 1000;
 
 // eslint-disable-next-line no-promise-executor-return
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const OAColorDistribution = ({ countryCodes, countryLabels }) => {
+  const { api, defaultChartOptions, sleepDuration } = config;
   const [isLoading, setIsLoading] = useState(false);
-  const [options, setOptions] = useState({
-    chart: {
-      type: 'column',
-    },
-    legend: {
-      align: 'left',
-      reversed: true,
-      title: { text: 'Color' },
-      verticalAlign: 'top',
-    },
-    plotOptions: {
-      column: {
-        stacking: 'normal',
-      },
-    },
-    xAxis: {
-      title: {
-        text: 'Publication year',
-      },
-    },
-    yAxis: {
-      labels: {
-        format: '{text} %',
-      },
-      title: {
-        text: 'Open access rate',
-      },
-    },
-    credits: {
-      enabled: false,
-    },
-  });
+  const [options, setOptions] = useState({});
 
   useEffect(() => {
     const getData = async () => {
@@ -107,7 +75,10 @@ const OAColorDistribution = ({ countryCodes, countryLabels }) => {
           });
           await sleep(sleepDuration);
         }
-        const optionsCopy = JSON.parse(JSON.stringify(options));
+        console.log(defaultChartOptions);
+        console.log(JSON.stringify(defaultChartOptions));
+        console.log(JSON.parse(JSON.stringify(defaultChartOptions)));
+        const optionsCopy = JSON.parse(JSON.stringify(defaultChartOptions));
         optionsCopy.xAxis.categories = years;
         optionsCopy.series = [
           { name: 'Closed', data: closed },
@@ -118,6 +89,7 @@ const OAColorDistribution = ({ countryCodes, countryLabels }) => {
           { name: 'Unknown', data: unknown },
         ];
         optionsCopy.colors = ['black', 'green', 'yellow', 'orange', 'pink', 'grey'];
+        optionsCopy.legend.title = { text: 'Color' };
         optionsCopy.title = { text: `Distribution of the open access colors of publications with DOI in ${countryLabels} according to OpenAlex` };
         optionsCopy.plotOptions.column.dataLabels = {
           enabled: true, formatter() {
