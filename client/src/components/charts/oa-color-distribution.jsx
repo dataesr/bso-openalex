@@ -2,13 +2,11 @@
 import { useEffect, useState } from 'react';
 
 import ChartWrapper from './chart-wrapper';
-import config from './config.json';
 
 // eslint-disable-next-line no-promise-executor-return
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-const OAColorDistribution = ({ countryCodes, countryLabels }) => {
-  const { api, defaultChartOptions, mailto, sleepDuration } = config;
+const OAColorDistribution = ({ api, countryCodes, countryLabels, defaultChartOptions, mailto, sleepDuration }) => {
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [options, setOptions] = useState({});
@@ -101,10 +99,11 @@ const OAColorDistribution = ({ countryCodes, countryLabels }) => {
             pointFormat: '<b>Publication year {point.year}</b><br>• Access rate<br>with hosting {point.series.name}:<br>{point.y:.2f}% ({point.y_abs} / {point.y_tot})'
           };
           setOptions(optionsCopy);
-          setIsLoading(false);
         };
       } catch (error) {
         setIsError(true);
+      } finally {
+        setIsLoading(false);
       }
     };
     getData();

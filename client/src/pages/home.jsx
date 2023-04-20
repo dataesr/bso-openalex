@@ -2,14 +2,12 @@ import { Button, Col, Container, Highlight, Row, SearchableSelect, Tag, TagGroup
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
+import config from './config.json';
 import OAColorDistribution from '../components/charts/oa-color-distribution';
 import OAStatusDistribution from '../components/charts/oa-status-distribution';
 
-const { VITE_OPENALEX_MAILTO } = import.meta.env;
-
-const api = 'https://api.openalex.org/works';
-
 export default function Home() {
+  const { api, defaultChartOptions, mailto, sleepDuration } = config;
   const navigate = useNavigate();
   let { countryCodes } = useParams();
 
@@ -17,7 +15,7 @@ export default function Home() {
   const [selectedCountries, setSelectedCountries] = useState(countryCodes.split(',').map((item) => item.trim().toLowerCase()));
 
   const loadAllCountries = async () => {
-    const response = await fetch(`${api}?group_by=institutions.country_code&mailto=${VITE_OPENALEX_MAILTO}`);
+    const response = await fetch(`${api}?group_by=institutions.country_code&mailto=${mailto}`);
     const data = await response.json();
     const countries = data.group_by.filter((item) => item.key !== 'unknown').map((item) => ({ value: item.key.toLowerCase(), label: item.key_display_name, count: item.count }));
     return countries;
@@ -88,7 +86,14 @@ export default function Home() {
       </Row>
       <Row>
         <Col>
-          <OAStatusDistribution countryCodes={countryCodes.replaceAll(',', '|')} countryLabels={countryCodes.replaceAll(',', ', ')} />
+          <OAStatusDistribution
+            api={api}
+            countryCodes={countryCodes.replaceAll(',', '|')}
+            countryLabels={countryCodes.replaceAll(',', ', ')}
+            defaultChartOptions={defaultChartOptions}
+            mailto={mailto}
+            sleepDuration={sleepDuration}
+          />
         </Col>
         {selectedCountries && selectedCountries.includes('fr') && (
           <Col>
@@ -103,7 +108,14 @@ export default function Home() {
       </Row>
       <Row>
         <Col>
-          <OAColorDistribution countryCodes={countryCodes.replaceAll(',', '|')} countryLabels={countryCodes.replaceAll(',', ', ')} />
+          <OAColorDistribution
+            api={api}
+            countryCodes={countryCodes.replaceAll(',', '|')}
+            countryLabels={countryCodes.replaceAll(',', ', ')}
+            defaultChartOptions={defaultChartOptions}
+            mailto={mailto}
+            sleepDuration={sleepDuration}
+          />
         </Col>
       </Row>
     </Container>

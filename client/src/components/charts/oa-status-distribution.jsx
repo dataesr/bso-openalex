@@ -1,13 +1,11 @@
 import { useEffect, useState } from 'react';
 
 import ChartWrapper from './chart-wrapper';
-import config from './config.json';
 
 // eslint-disable-next-line no-promise-executor-return
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-const OAStatusDistribution = ({ countryCodes, countryLabels }) => {
-  const { api, defaultChartOptions, sleepDuration } = config;
+const OAStatusDistribution = ({ api, countryCodes, countryLabels, defaultChartOptions, mailto, sleepDuration }) => {
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [options, setOptions] = useState({});
@@ -26,7 +24,7 @@ const OAStatusDistribution = ({ countryCodes, countryLabels }) => {
             const data1 = await response1.json();
             const oaTotal = data1.group_by.find((item) => item.key === 'true').count;
             const total = data1.group_by.find((item) => item.key === 'true').count + data1.group_by.find((item) => item.key === 'unknown').count;
-            const response2 = await fetch(`${api}?filter=institutions.country_code:${countryCodes},publication_year:${year},has_doi:true,best_oa_location.is_oa:true&group_by=locations.source.type&mailto=${VITE_OPENALEX_MAILTO}`);
+            const response2 = await fetch(`${api}?filter=institutions.country_code:${countryCodes},publication_year:${year},has_doi:true,best_oa_location.is_oa:true&group_by=locations.source.type&mailto=${mailto}`);
             const data2 = await response2.json();
             const y = data2.group_by.find((item) => item.key === 'repository').count;
             const z = data2.group_by.find((item) => item.key === 'journal').count;
@@ -80,10 +78,11 @@ const OAStatusDistribution = ({ countryCodes, countryLabels }) => {
             pointFormat: '<b>Publication year {point.year}</b><br>• Open access rate<br>with hosting {point.series.name}:<br>{point.y:.2f}% ({point.y_abs} / {point.y_tot})<br>• Total open access rate:<br>{point.stackTotal:.2f}% ({point.y_oa} / {point.y_tot})'
           };
           setOptions(optionsCopy);
-          setIsLoading(false);
         }
       } catch (error) {
         setIsError(true);
+      } finally {
+        setIsLoading(false);
       }
     };
     getData();
