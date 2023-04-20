@@ -2,7 +2,7 @@ import { Button, Col, Container, Highlight, Row, SearchableSelect, Tag, TagGroup
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import config from './config.json';
+import config from '../config.json';
 import OAColorDistribution from '../components/charts/oa-color-distribution';
 import OAStatusDistribution from '../components/charts/oa-status-distribution';
 
