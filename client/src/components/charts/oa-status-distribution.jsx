@@ -20,11 +20,13 @@ const OAStatusDistribution = ({ api, countryCodes, countryLabels, defaultChartOp
           const oaPublisher = [];
           const oaRepositoryPublisher = [];
           for (const year of years) {
-            const response1 = await fetch(`${api}?filter=institutions.country_code:${countryCodes},publication_year:${year},has_doi:true&group_by=best_oa_location.is_oa&mailto=${mailto}`);
+            const oaField = 'best_oa_location.is_oa';
+            const typeField = 'locations.source.type';
+            const response1 = await fetch(`${api}?filter=institutions.country_code:${countryCodes},publication_year:${year},has_doi:true,is_paratext:false&group_by=${oaField}&mailto=${mailto}`);
             const data1 = await response1.json();
             const oaTotal = data1.group_by.find((item) => item.key === 'true').count;
-            const total = data1.group_by.find((item) => item.key === 'true').count + data1.group_by.find((item) => item.key === 'unknown').count;
-            const response2 = await fetch(`${api}?filter=institutions.country_code:${countryCodes},publication_year:${year},has_doi:true,best_oa_location.is_oa:true&group_by=locations.source.type&mailto=${mailto}`);
+            const total = data1.group_by.find((item) => item.key === 'true').count + data1.group_by.find((item) => item.key === 'unknown')?.count || 0;
+            const response2 = await fetch(`${api}?filter=institutions.country_code:${countryCodes},publication_year:${year},has_doi:true,is_paratext:false,${oaField}:true&group_by=${typeField}&mailto=${mailto}`);
             const data2 = await response2.json();
             const y = data2.group_by.find((item) => item.key === 'repository').count;
             const z = data2.group_by.find((item) => item.key === 'journal').count;
@@ -80,6 +82,7 @@ const OAStatusDistribution = ({ api, countryCodes, countryLabels, defaultChartOp
           setOptions(optionsCopy);
         }
       } catch (error) {
+        console.error(error);
         setIsError(true);
       } finally {
         setIsLoading(false);

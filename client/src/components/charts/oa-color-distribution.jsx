@@ -24,7 +24,7 @@ const OAColorDistribution = ({ api, countryCodes, countryLabels, defaultChartOpt
           const hybrid = [];
           const unknown = [];
           for (const year of years) {
-            const response = await fetch(`${api}?filter=institutions.country_code:${countryCodes},publication_year:${year},has_doi:true&group_by=open_access.oa_status&mailto=${mailto}`);
+            const response = await fetch(`${api}?filter=institutions.country_code:${countryCodes},publication_year:${year},has_doi:true,is_paratext:false&group_by=open_access.oa_status&mailto=${mailto}`);
             const data = await response.json();
             const total = data.group_by.reduce((acc, curr) => acc + curr.count, 0);
             const yAbsClosed = data.group_by.find((item) => item.key === 'closed')?.count || 0;
@@ -101,6 +101,7 @@ const OAColorDistribution = ({ api, countryCodes, countryLabels, defaultChartOpt
           setOptions(optionsCopy);
         };
       } catch (error) {
+        console.error(error);
         setIsError(true);
       } finally {
         setIsLoading(false);
