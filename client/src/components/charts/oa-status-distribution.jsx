@@ -23,29 +23,39 @@ const OAStatusDistribution = ({ api, countryCodes, countryLabels, defaultChartOp
             const statusField = 'oa_status';
             const response1 = await fetch(`${api}?filter=institutions.country_code:${countryCodes},publication_year:${year},has_doi:true,is_paratext:false&group_by=${statusField}&mailto=${mailto}`);
             const data1 = await response1.json();
-            const oaTotal = data1.group_by.find((item) => item.key === 'true').count;
-            const total = data1.group_by.find((item) => item.key === 'true').count + data1.group_by.find((item) => item.key === 'unknown')?.count || 0;
-            const response2 = await fetch(`${api}?filter=institutions.country_code:${countryCodes},publication_year:${year},has_doi:true,is_paratext:false,${oaField}:true&group_by=${typeField}&mailto=${mailto}`);
+            const total = data1.group_by.find((item) => item.key === 'closed').count
+              + data1.group_by.find((item) => item.key === 'green').count
+              + data1.group_by.find((item) => item.key === 'bronze').count
+              + data1.group_by.find((item) => item.key === 'gold').count
+              + data1.group_by.find((item) => item.key === 'hybrid').count;
+            const oaTotal = data1.group_by.find((item) => item.key === 'green').count
+              + data1.group_by.find((item) => item.key === 'bronze').count
+              + data1.group_by.find((item) => item.key === 'gold').count
+              + data1.group_by.find((item) => item.key === 'hybrid').count;
+            const response2 = await fetch(`${api}?filter=institutions.country_code:${countryCodes},publication_year:${year},has_doi:true,is_paratext:false,locations.source.type:repository&group_by=${statusField}&mailto=${mailto}`);
             const data2 = await response2.json();
-            const y = data2.group_by.find((item) => item.key === 'repository').count;
-            const z = data2.group_by.find((item) => item.key === 'journal').count;
+            const oar = data1.group_by.find((item) => item.key === 'green').count;
             oaRepository.push({
-              y: (oaTotal - z) / total * 100,
-              y_abs: oaTotal - z,
+              y: oar / total * 100,
+              y_abs: oar,
               y_oa: oaTotal,
               y_tot: total,
               year,
             });
-            oaPublisher.push({
-              y: (oaTotal - y) / total * 100,
-              y_abs: oaTotal - y,
-              y_oa: oaTotal,
-              y_tot: total,
-              year,
-            });
+            const oarp = data2.group_by.find((item) => item.key === 'bronze').count
+              + data2.group_by.find((item) => item.key === 'gold').count
+              + data2.group_by.find((item) => item.key === 'hybrid').count;
             oaRepositoryPublisher.push({
-              y: (z + y - oaTotal) / total * 100,
-              y_abs: oaTotal - y,
+              y: oarp / total * 100,
+              y_abs: oarp,
+              y_oa: oaTotal,
+              y_tot: total,
+              year,
+            });
+            const oap = oaTotal - oar - oarp;
+            oaPublisher.push({
+              y: oap / total * 100,
+              y_abs: oap,
               y_oa: oaTotal,
               y_tot: total,
               year,
