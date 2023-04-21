@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 
 import ChartWrapper from './chart-wrapper';
+import { countriesToApi } from '../../utils/countries';
+import { years } from '../../config.json';
 
 // eslint-disable-next-line no-promise-executor-return
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-const OAStatusDistribution = ({ api, countryCodes, countryLabels, defaultChartOptions, mailto, sleepDuration }) => {
+const OAStatusDistribution = ({ api, countryCodes, defaultChartOptions, mailto, sleepDuration }) => {
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [options, setOptions] = useState({});
@@ -15,13 +17,12 @@ const OAStatusDistribution = ({ api, countryCodes, countryLabels, defaultChartOp
       try {
         if (countryCodes && countryCodes !== '') {
           setIsLoading(true);
-          const years = ['2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021'];
+          const countries = countriesToApi(countryCodes);
           const oaRepository = [];
           const oaPublisher = [];
           const oaRepositoryPublisher = [];
           for (const year of years) {
-            const statusField = 'oa_status';
-            const response1 = await fetch(`${api}?filter=institutions.country_code:${countryCodes},publication_year:${year},has_doi:true,is_paratext:false&group_by=${statusField}&mailto=${mailto}`);
+            const response1 = await fetch(`${api}?filter=institutions.country_code:${countries},publication_year:${year},has_doi:true,is_paratext:false&group_by=oa_status&mailto=${mailto}`);
             const data1 = await response1.json();
             const total = data1.group_by.find((item) => item.key === 'closed').count
               + data1.group_by.find((item) => item.key === 'green').count
@@ -32,9 +33,9 @@ const OAStatusDistribution = ({ api, countryCodes, countryLabels, defaultChartOp
               + data1.group_by.find((item) => item.key === 'bronze').count
               + data1.group_by.find((item) => item.key === 'gold').count
               + data1.group_by.find((item) => item.key === 'hybrid').count;
-            const response2 = await fetch(`${api}?filter=institutions.country_code:${countryCodes},publication_year:${year},has_doi:true,is_paratext:false,locations.source.type:repository&group_by=${statusField}&mailto=${mailto}`);
+            const response2 = await fetch(`${api}?filter=institutions.country_code:${countries},publication_year:${year},has_doi:true,is_paratext:false,locations.source.type:repository&group_by=oa_status&mailto=${mailto}`);
             const data2 = await response2.json();
-            const oar = data1.group_by.find((item) => item.key === 'green').count;
+            const oar = data2.group_by.find((item) => item.key === 'green').count;
             oaRepository.push({
               y: oar / total * 100,
               y_abs: oar,
@@ -71,7 +72,7 @@ const OAStatusDistribution = ({ api, countryCodes, countryLabels, defaultChartOp
           ];
           optionsCopy.colors = ['#ead737', '#91ae4f', '#19905b'];
           optionsCopy.legend.title = { text: 'Hosting type' };
-          optionsCopy.title = { text: `Distribution of the open access status of publications with DOI in ${countryLabels} according to OpenAlex` };
+          optionsCopy.title = { text: `Distribution of the open access status of publications with DOI in ${countryCodes} according to OpenAlex` };
           optionsCopy.plotOptions.column.dataLabels = {
             enabled: true,
             formatter() {
@@ -98,7 +99,7 @@ const OAStatusDistribution = ({ api, countryCodes, countryLabels, defaultChartOp
       }
     };
     getData();
-  }, [countryCodes, countryLabels]);
+  }, [countryCodes]);
 
   return (
     <ChartWrapper

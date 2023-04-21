@@ -2,11 +2,13 @@
 import { useEffect, useState } from 'react';
 
 import ChartWrapper from './chart-wrapper';
+import { countriesToApi } from '../../utils/countries';
+import { years } from '../../config.json';
 
 // eslint-disable-next-line no-promise-executor-return
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-const OAColorDistribution = ({ api, countryCodes, countryLabels, defaultChartOptions, mailto, sleepDuration }) => {
+const OAColorDistribution = ({ api, countryCodes, defaultChartOptions, mailto, sleepDuration }) => {
   const [isError, setIsError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [options, setOptions] = useState({});
@@ -16,7 +18,7 @@ const OAColorDistribution = ({ api, countryCodes, countryLabels, defaultChartOpt
       try {
         if (countryCodes && countryCodes !== '') {
           setIsLoading(true);
-          const years = ['2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021'];
+          const countries = countriesToApi(countryCodes);
           const closed = [];
           const green = [];
           const gold = [];
@@ -24,7 +26,7 @@ const OAColorDistribution = ({ api, countryCodes, countryLabels, defaultChartOpt
           const hybrid = [];
           const unknown = [];
           for (const year of years) {
-            const response = await fetch(`${api}?filter=institutions.country_code:${countryCodes},publication_year:${year},has_doi:true,is_paratext:false&group_by=oa_status&mailto=${mailto}`);
+            const response = await fetch(`${api}?filter=institutions.country_code:${countries},publication_year:${year},has_doi:true,is_paratext:false&group_by=oa_status&mailto=${mailto}`);
             const data = await response.json();
             const total = data.group_by.reduce((acc, curr) => acc + curr.count, 0);
             const yAbsClosed = data.group_by.find((item) => item.key === 'closed')?.count || 0;
@@ -83,7 +85,7 @@ const OAColorDistribution = ({ api, countryCodes, countryLabels, defaultChartOpt
           ];
           optionsCopy.colors = ['black', 'green', 'yellow', 'orange', 'pink', 'grey'];
           optionsCopy.legend.title = { text: 'Color' };
-          optionsCopy.title = { text: `Distribution of the open access colors of publications with DOI in ${countryLabels} according to OpenAlex` };
+          optionsCopy.title = { text: `Distribution of the open access colors of publications with DOI in ${countryCodes} according to OpenAlex` };
           optionsCopy.plotOptions.column.dataLabels = {
             enabled: true, formatter() {
               return Number(this.y).toFixed(0).concat(' %');
@@ -108,7 +110,7 @@ const OAColorDistribution = ({ api, countryCodes, countryLabels, defaultChartOpt
       }
     };
     getData();
-  }, [countryCodes, countryLabels]);
+  }, [countryCodes]);
 
   return (
     <ChartWrapper

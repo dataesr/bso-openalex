@@ -32,5 +32,6 @@
     }
   },
   "mailto": "bso@recherche.gouv.fr",
-  "sleepDuration": 1000
+  "sleepDuration": 1000,
+  "years": ["2013", "2014", "2015", "2016", "2017", "2018", "2019", "2020", "2021"]
 }

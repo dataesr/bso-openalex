@@ -17,18 +17,13 @@ export default function Home() {
   const loadAllCountries = async () => {
     const response = await fetch(`${api}?group_by=institutions.country_code&mailto=${mailto}`);
     const data = await response.json();
-    const countries = data.group_by.filter((item) => item.key !== 'unknown').map((item) => ({ value: item.key.toLowerCase(), label: item.key_display_name, count: item.count }));
+    const countries = data.group_by.filter((item) => item.key !== 'unknown').map((item) => ({ value: item.key.toLowerCase(), label: item.key_display_name }));
     return countries;
   };
 
   const addSelectedCountry = (selectedCountry) => {
     if (selectedCountry && selectedCountry.length > 0) {
-      if (selectedCountry === 'eu') {
-        selectedCountry = ['at', 'be', 'bg', 'cy', 'cz', 'de', 'dk', 'ee', 'es', 'fi', 'fr', 'gb', 'gr', 'hr', 'hu', 'ie', 'it', 'lv', 'lt', 'lu', 'mt', 'nl', 'pl', 'pt', 'ro', 'sk', 'si', 'se'];
-        setSelectedCountries([...new Set([...selectedCountries, ...selectedCountry])].sort());
-      } else {
-        setSelectedCountries([...new Set([...selectedCountries, selectedCountry])].sort());
-      }
+      setSelectedCountries([...new Set([...selectedCountries, selectedCountry])].sort());
     }
   }
 
@@ -45,7 +40,7 @@ export default function Home() {
   useEffect(() => {
     async function getData() {
       const data = await loadAllCountries();
-      data.unshift({ value: 'eu', label: 'Europe', count: 0 });
+      data.unshift({ value: 'eu', label: 'Europe' });
       setCountries(data);
     }
     getData();
@@ -62,7 +57,7 @@ export default function Home() {
         <Col>
           <SearchableSelect
             onChange={(selectedCountry) => addSelectedCountry(selectedCountry)}
-            options={countries.map((item) => ({ value: item.value, label: `${item.label} (${item.count.toLocaleString()})` }))}
+            options={countries.map((item) => ({ value: item.value, label: `${item.label}` }))}
             selected={countries[0]}
           />
           <TagGroup>
@@ -88,8 +83,7 @@ export default function Home() {
         <Col>
           <OAStatusDistribution
             api={api}
-            countryCodes={countryCodes.replaceAll(',', '|')}
-            countryLabels={countryCodes.replaceAll(',', ', ')}
+            countryCodes={countryCodes}
             defaultChartOptions={defaultChartOptions}
             mailto={mailto}
             sleepDuration={sleepDuration}
@@ -110,8 +104,7 @@ export default function Home() {
         <Col>
           <OAColorDistribution
             api={api}
-            countryCodes={countryCodes.replaceAll(',', '|')}
-            countryLabels={countryCodes.replaceAll(',', ', ')}
+            countryCodes={countryCodes}
             defaultChartOptions={defaultChartOptions}
             mailto={mailto}
             sleepDuration={sleepDuration}
