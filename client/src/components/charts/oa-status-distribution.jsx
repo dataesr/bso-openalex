@@ -20,9 +20,8 @@ const OAStatusDistribution = ({ api, countryCodes, countryLabels, defaultChartOp
           const oaPublisher = [];
           const oaRepositoryPublisher = [];
           for (const year of years) {
-            const oaField = 'best_oa_location.is_oa';
-            const typeField = 'locations.source.type';
-            const response1 = await fetch(`${api}?filter=institutions.country_code:${countryCodes},publication_year:${year},has_doi:true,is_paratext:false&group_by=${oaField}&mailto=${mailto}`);
+            const statusField = 'oa_status';
+            const response1 = await fetch(`${api}?filter=institutions.country_code:${countryCodes},publication_year:${year},has_doi:true,is_paratext:false&group_by=${statusField}&mailto=${mailto}`);
             const data1 = await response1.json();
             const oaTotal = data1.group_by.find((item) => item.key === 'true').count;
             const total = data1.group_by.find((item) => item.key === 'true').count + data1.group_by.find((item) => item.key === 'unknown')?.count || 0;
