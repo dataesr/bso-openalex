@@ -2,12 +2,9 @@ import { Button, Col, Container, Highlight, Row, SearchableSelect, Tag, TagGroup
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
-import config from '../config.json';
-import OAColorDistribution from '../components/charts/oa-color-distribution';
-import OAStatusDistribution from '../components/charts/oa-status-distribution';
+import ChartWrapper from '../components/charts/chart-wrapper';
 
 export default function Home() {
-  const { api, defaultChartOptions, mailto, sleepDuration } = config;
   const navigate = useNavigate();
   let { countryCodes } = useParams();
 
@@ -81,12 +78,9 @@ export default function Home() {
       </Row>
       <Row>
         <Col>
-          <OAStatusDistribution
-            api={api}
+          <ChartWrapper
+            id="oa-status-distribution"
             countryCodes={countryCodes}
-            defaultChartOptions={defaultChartOptions}
-            mailto={mailto}
-            sleepDuration={sleepDuration}
           />
         </Col>
         {selectedCountries && selectedCountries.includes('fr') && (
@@ -102,12 +96,9 @@ export default function Home() {
       </Row>
       <Row>
         <Col>
-          <OAColorDistribution
-            api={api}
+          <ChartWrapper
+            id="oa-colors-distribution"
             countryCodes={countryCodes}
-            defaultChartOptions={defaultChartOptions}
-            mailto={mailto}
-            sleepDuration={sleepDuration}
           />
         </Col>
       </Row>
