@@ -22,43 +22,43 @@ const OAStatusDistribution = ({ api, countryCodes, defaultChartOptions, mailto, 
           const oaPublisher = [];
           const oaRepositoryPublisher = [];
           for (const year of years) {
-            const response1 = await fetch(`${api}?filter=institutions.country_code:${countries},publication_year:${year},has_doi:true,is_paratext:false&group_by=oa_status&mailto=${mailto}`);
+            const response1 = await fetch(`${api}?filter=institutions.country_code:${countries},publication_year:${year},has_doi:true,is_paratext:false&group_by=open_access.oa_status&mailto=${mailto}`);
             const data1 = await response1.json();
-            const total = data1.group_by.find((item) => item.key === 'closed').count
+            console.log(data1);
+            const count = data1.group_by.find((item) => item.key === 'closed').count
               + data1.group_by.find((item) => item.key === 'green').count
               + data1.group_by.find((item) => item.key === 'bronze').count
               + data1.group_by.find((item) => item.key === 'gold').count
               + data1.group_by.find((item) => item.key === 'hybrid').count;
-            const oaTotal = data1.group_by.find((item) => item.key === 'green').count
+            const oaCount = data1.group_by.find((item) => item.key === 'green').count
               + data1.group_by.find((item) => item.key === 'bronze').count
               + data1.group_by.find((item) => item.key === 'gold').count
               + data1.group_by.find((item) => item.key === 'hybrid').count;
-            const response2 = await fetch(`${api}?filter=institutions.country_code:${countries},publication_year:${year},has_doi:true,is_paratext:false,locations.source.type:repository&group_by=oa_status&mailto=${mailto}`);
+            const oaRepositoryCount = data1.group_by.find((item) => item.key === 'green').count;
+            const response2 = await fetch(`${api}?filter=institutions.country_code:${countries},publication_year:${year},has_doi:true,is_paratext:false,open_access.is_oa:true,open_access.oa_status:!green&group_by=open_access.any_repository_has_fulltext&mailto=${mailto}`);
             const data2 = await response2.json();
-            const oar = data1.group_by.find((item) => item.key === 'green').count;
+            console.log(data2);
             oaRepository.push({
-              y: oar / total * 100,
-              y_abs: oar,
-              y_oa: oaTotal,
-              y_tot: total,
+              y: oaRepositoryCount / count * 100,
+              y_abs: oaRepositoryCount,
+              y_oa: oaCount,
+              y_tot: count,
               year,
             });
-            const oarp = data2.group_by.find((item) => item.key === 'bronze').count
-              + data2.group_by.find((item) => item.key === 'gold').count
-              + data2.group_by.find((item) => item.key === 'hybrid').count;
+            const oaRepositoryPublisherCount = data2.group_by.find((item) => item.key === 'true').count;
             oaRepositoryPublisher.push({
-              y: oarp / total * 100,
-              y_abs: oarp,
-              y_oa: oaTotal,
-              y_tot: total,
+              y: oaRepositoryPublisherCount / count * 100,
+              y_abs: oaRepositoryPublisherCount,
+              y_oa: oaCount,
+              y_tot: count,
               year,
             });
-            const oap = oaTotal - oar - oarp;
+            const oaPublisherCount = data2.group_by.find((item) => item.key === 'false').count;
             oaPublisher.push({
-              y: oap / total * 100,
-              y_abs: oap,
-              y_oa: oaTotal,
-              y_tot: total,
+              y: oaPublisherCount / count * 100,
+              y_abs: oaPublisherCount,
+              y_oa: oaCount,
+              y_tot: count,
               year,
             });
             await sleep(sleepDuration);
