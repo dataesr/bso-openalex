@@ -347,6 +347,18 @@ doi,openalex_type,bso_type
 10.1101/2020.05.22.110122,repository,publisher;repository
 10.1016/j.jhazmat.2020.123026,repository,closed
 10.1039/d0dt01527j,repository,closed
+10.1101/2020.07.14.202028,repository,not_found
+10.1101/2020.07.24.20159947,repository,not_found
+10.2139/ssrn.3541361,repository,not_found
+10.1101/2020.08.10.241414,repository,not_found
+10.21203/rs.3.rs-33958/v1,repository,not_found
+10.21437/interspeech.2020-3084,repository,not_found
+10.1111/ene.14474,repository,closed
+10.1101/2020.10.20.20213116,repository,publisher;repository
+10.1101/2020.11.03.20225359,repository,publisher;repository
+10.1101/2020.06.12.147660,repository,publisher;repository
+10.1101/263186,repository,publisher;repository
+10.3390/nano10112285,repository,publisher;repository
 10.1101/2020.11.17.385252,repository,not_found
 10.1101/2020.12.16.20247684,repository,not_found
 10.2139/ssrn.3557360,repository,not_found
@@ -705,6 +717,7 @@ doi,openalex_type,bso_type
 10.3390/polym12102227,publisher;repository,not_found
 10.1136/bjsports-2019-100608,publisher;repository,not_found
 10.1016/j.scitotenv.2019.135460,publisher;repository,publisher
+10.1016/j.techfore.2020.119956,publisher;repository,publisher
 10.1016/j.compstruct.2020.112127,publisher;repository,publisher
 10.1016/j.devcel.2020.04.008,publisher;repository,publisher
 10.1016/j.conb.2020.04.003,publisher;repository,publisher
@@ -715,7 +728,6 @@ doi,openalex_type,bso_type
 10.3324/haematol.2019.218545,publisher;repository,not_found
 10.1007/s10340-020-01200-2,publisher;repository,publisher
 10.1016/j.molcel.2020.01.001,publisher;repository,publisher
-10.1016/j.techfore.2020.119956,publisher;repository,publisher
 10.33590/emj/200324,publisher;repository,not_found
 10.1176/appi.ajp.2019.19060666,publisher;repository,not_found
 10.3390/rs12091422,publisher;repository,not_found
@@ -910,7 +922,6 @@ doi,openalex_type,bso_type
 10.1016/j.cbi.2020.108974,publisher;repository,publisher
 10.1098/rstb.2019.0661,publisher;repository,publisher
 10.1016/j.ijfoodmicro.2020.108574,publisher;repository,publisher
-10.1063/1.5140645,publisher;repository,publisher
 10.1016/j.jcin.2020.01.231,publisher;repository,publisher
 10.1002/art.41299,publisher;repository,publisher
 10.1016/s2468-2667(20)30095-5,publisher;repository,repository
@@ -930,6 +941,7 @@ doi,openalex_type,bso_type
 10.1016/j.jaci.2020.01.006,publisher;repository,publisher
 10.1016/j.ecss.2020.106613,publisher;repository,publisher
 10.1183/13993003.02340-2019,publisher;repository,publisher
+10.1063/1.5140645,publisher;repository,publisher
 10.1097/aln.0000000000003260,publisher;repository,publisher
 10.1016/j.jhtm.2020.02.009,publisher;repository,publisher
 10.14283/jfa.2020.18,publisher;repository,publisher
