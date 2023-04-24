@@ -35,7 +35,7 @@ const OAStatusDistribution = ({ api, countryCodes, defaultChartOptions, mailto, 
               + data1.group_by.find((item) => item.key === 'hybrid').count;
             const response2 = await fetch(`${api}?filter=institutions.country_code:${countries},publication_year:${year},has_doi:true,is_paratext:false,locations.source.type:repository&group_by=oa_status&mailto=${mailto}`);
             const data2 = await response2.json();
-            const oar = data2.group_by.find((item) => item.key === 'green').count;
+            const oar = data1.group_by.find((item) => item.key === 'green').count;
             oaRepository.push({
               y: oar / total * 100,
               y_abs: oar,
