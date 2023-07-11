@@ -1,17 +1,4 @@
-const API = 'https://api.openalex.org/works';
-const DEFAULT_CHART_OPTIONS = {
-  "chart": { "type": "column" },
-  "legend": { "align": "left", "reversed": true, "verticalAlign": "top" },
-  "plotOptions": { "column": { "stacking": "normal" }},
-  "xAxis": { "title": { "text": "Publication year" }},
-  "yAxis": { "labels": { "format": "{text}%" }, "title": { "text": "Open access rate" }},
-  "credits": { "enabled": false }
-};
-const EUROPE = ['at', 'be', 'bg', 'cy', 'cz', 'de', 'dk', 'ee', 'es', 'fi', 'fr', 'gb', 'gr', 'hr', 'hu', 'ie', 'it', 'lv', 'lt', 'lu', 'mt', 'nl', 'pl', 'pt', 'ro', 'sk', 'si', 'se']
-const MAILTO = 'bso@recherche.gouv.fr';
-const SLEEP_DURATION = 1000;
-const YEARS = ['2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021'];
-
+import { API, DEFAULT_CHART_OPTIONS, EUROPE, MAILTO, SLEEP_DURATION, YEARS } from '../../config';
 
 const countriesToApi = (countries) => {
   const apiCountries = countries.split(',').map((item) => item === 'eu' ? EUROPE : item).flat();

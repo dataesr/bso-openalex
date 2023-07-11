@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import ChartWrapper from '../components/charts/chart-wrapper';
+import { API, MAILTO } from '../config';
 
 export default function Home() {
   const navigate = useNavigate();
@@ -12,7 +13,7 @@ export default function Home() {
   const [selectedCountries, setSelectedCountries] = useState(countryCodes.split(',').map((item) => item.trim().toLowerCase()));
 
   const loadAllCountries = async () => {
-    const response = await fetch(`${api}?group_by=institutions.country_code&mailto=${mailto}`);
+    const response = await fetch(`${API}?group_by=institutions.country_code&mailto=${MAILTO}`);
     const data = await response.json();
     const countries = data.group_by.filter((item) => item.key !== 'unknown').map((item) => ({ value: item.key.toLowerCase(), label: item.key_display_name }));
     return countries;
